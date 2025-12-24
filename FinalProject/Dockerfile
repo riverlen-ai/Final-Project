@@ -1,0 +1,16 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN pip install flask
+
+COPY requirements.txt /app/
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app.py /app/
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+

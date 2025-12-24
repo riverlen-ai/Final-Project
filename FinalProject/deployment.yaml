@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myflask-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myflask
+  template:
+    metadata:
+      labels:
+        app: myflask
+    spec:
+      containers:
+      - name: myflask-container
+        image: lena2017/myflaskapp:02
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+          limits:
+            cpu: "200m"
+        env:
+        - name: APP_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: myflask-config
+              key: APP_MODE
+        - name: WELCOME_MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: myflask-config
+              key: WELCOME_MESSAGE
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: myflask-secret
+              key: DB_PASSWORD
+
+        # -------------------------
+        #      HEALTH PROBES
+        # -------------------------
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 2
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 2
+

@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: myflask-cronjob
+spec:
+  schedule: "*/5 * * * *"  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: curl-container
+            image: curlimages/curl:latest
+            args:
+              - /bin/sh
+              - -c
+              - |
+                echo "Pinging Flask API..."
+                curl -s http://myflask-service.default.svc.cluster.local:80 || echo "Failed"
+          restartPolicy: Never
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+
