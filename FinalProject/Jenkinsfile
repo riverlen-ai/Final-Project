@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+
+  environment {
+    APP_NAME = "final-project"
+    HELM_CHART = "helm/final-project"
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        git branch: 'main',
+            url: 'https://github.com/riverlen-ai/Final-Project.git'
+      }
+    }
+
+    stage('Helm Lint') {
+      steps {
+        sh 'helm lint $HELM_CHART'
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t final-project:latest .'
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh '''
+        helm upgrade --install $APP_NAME $HELM_CHART \
+          --namespace default
+        '''
+      }
+    }
+  }
+}
