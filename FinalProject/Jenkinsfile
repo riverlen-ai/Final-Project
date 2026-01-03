@@ -1,8 +1,18 @@
 pipeline {
   agent {
-    docker {
-      image 'alpine/helm:3.14.0'
-      args '-v /var/run/docker.sock:/var/run/docker.sock'
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: helm
+    image: alpine/helm:3.14.0
+    command:
+    - cat
+    tty: true
+"""
+      defaultContainer 'helm'
     }
   }
 
@@ -14,12 +24,6 @@ pipeline {
 
   stages {
 
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
-
     stage('Debug') {
       steps {
         sh '''
@@ -27,23 +31,20 @@ pipeline {
           pwd
           echo "FILES:"
           ls -la
-          echo "HELM VERSION:"
           helm version
-          echo "DOCKER VERSION:"
-          docker version || true
         '''
+      }
+    }
+
+    stage('Checkout') {
+      steps {
+        checkout scm
       }
     }
 
     stage('Helm Lint') {
       steps {
         sh "helm lint ${HELM_CHART}"
-      }
-    }
-
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t final-project:latest .'
       }
     }
 
@@ -63,7 +64,7 @@ pipeline {
       echo "✅ Pipeline completed successfully"
     }
     failure {
-      echo "❌ Pipeline failed – check logs"
+      echo "❌ Pipeline failed"
     }
   }
 }
