@@ -1,4 +1,4 @@
-pipeline {
+ipipeline {
   agent {
     kubernetes {
       yaml """
@@ -25,43 +25,16 @@ spec:
   }
 
   stages {
-
-<<<<<<< HEAD
     stage('Build') {
       steps {
         echo "Building application..."
-        // אם יש בניית Docker למשל:
         // sh "docker build -t my-app:latest ."
-=======
-    stage('Debug') {
-      steps {
-        sh '''
-          echo "=== DEBUG ==="
-          pwd
-          ls -la
-          echo "--- helm dir ---"
-          ls -la helm || true
-          helm version
-        '''
-      }
-    }
-
-    stage('Checkout') {
-      steps {
-        checkout scm
->>>>>>> 5de9a116e908dc8c64f80c998d2650b1c1032940
       }
     }
 
     stage('Test') {
       steps {
-<<<<<<< HEAD
         echo "Running tests..."
-        // כאן אפשר להריץ unit tests או integration tests
-        // sh "pytest tests/" או sh "npm test"
-=======
-        sh "helm lint ${HELM_CHART}"
->>>>>>> 5de9a116e908dc8c64f80c998d2650b1c1032940
       }
     }
 
