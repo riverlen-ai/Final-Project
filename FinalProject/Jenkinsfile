@@ -1,9 +1,25 @@
 pipeline {
-  agent any
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: helm
+    image: alpine/helm:3.14.0
+    command:
+    - cat
+    tty: true
+"""
+      defaultContainer 'helm'
+    }
+  }
 
   environment {
     APP_NAME = "final-project"
     HELM_CHART = "helm/final-project"
+    NAMESPACE = "default"
   }
 
   stages {
@@ -17,23 +33,20 @@ pipeline {
 
     stage('Helm Lint') {
       steps {
+        sh 'helm version'
         sh 'helm lint $HELM_CHART'
-      }
-    }
-
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t final-project:latest .'
       }
     }
 
     stage('Deploy to Kubernetes') {
       steps {
         sh '''
-        helm upgrade --install $APP_NAME $HELM_CHART \
-          --namespace default
+          helm upgrade --install $APP_NAME $HELM_CHART \
+            --namespace $NAMESPACE \
+            --create-namespace
         '''
       }
     }
   }
+}
 }
