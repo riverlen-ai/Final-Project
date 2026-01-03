@@ -1,24 +1,8 @@
 pipeline {
   agent {
-<<<<<<< HEAD
-    kubernetes {
-      yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: helm
-    image: alpine/helm:3.14.0
-    command:
-    - cat
-    tty: true
-"""
-      defaultContainer 'helm'
-=======
     docker {
       image 'alpine/helm:3.14.0'
       args '-v /var/run/docker.sock:/var/run/docker.sock'
->>>>>>> 0e3ddc2 (Laast Change u promise)
     }
   }
 
@@ -36,38 +20,50 @@ spec:
       }
     }
 
+    stage('Debug') {
+      steps {
+        sh '''
+          echo "PWD:"
+          pwd
+          echo "FILES:"
+          ls -la
+          echo "HELM VERSION:"
+          helm version
+          echo "DOCKER VERSION:"
+          docker version || true
+        '''
+      }
+    }
+
     stage('Helm Lint') {
       steps {
-<<<<<<< HEAD
-        sh 'helm version'
-        sh 'helm lint ${HELM_CHART}'
-=======
-        sh 'helm lint ${HELM_CHART}'
+        sh "helm lint ${HELM_CHART}"
       }
     }
 
     stage('Build Docker Image') {
       steps {
         sh 'docker build -t final-project:latest .'
->>>>>>> 0e3ddc2 (Laast Change u promise)
       }
     }
 
     stage('Deploy to Kubernetes') {
       steps {
-<<<<<<< HEAD
         sh """
           helm upgrade --install ${APP_NAME} ${HELM_CHART} \
             --namespace ${NAMESPACE} \
             --create-namespace
         """
-=======
-        sh '''
-          helm upgrade --install ${APP_NAME} ${HELM_CHART} \
-          --namespace default --create-namespace
-        '''
->>>>>>> 0e3ddc2 (Laast Change u promise)
       }
+    }
+  }
+
+  post {
+    success {
+      echo "✅ Pipeline completed successfully"
+    }
+    failure {
+      echo "❌ Pipeline failed – check logs"
     }
   }
 }
