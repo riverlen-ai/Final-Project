@@ -17,9 +17,9 @@ spec:
   }
 
   environment {
-    APP_NAME = "final-project"
+    APP_NAME   = "final-project"
     HELM_CHART = "helm/final-project"
-    NAMESPACE = "default"
+    NAMESPACE  = "default"
   }
 
   stages {
@@ -34,19 +34,19 @@ spec:
     stage('Helm Lint') {
       steps {
         sh 'helm version'
-        sh 'helm lint $HELM_CHART'
+        sh 'helm lint ${HELM_CHART}'
       }
     }
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh '''
-          helm upgrade --install $APP_NAME $HELM_CHART \
-            --namespace $NAMESPACE \
+        sh """
+          helm upgrade --install ${APP_NAME} ${HELM_CHART} \
+            --namespace ${NAMESPACE} \
             --create-namespace
-        '''
+        """
       }
     }
   }
 }
-}
+
