@@ -41,10 +41,12 @@ spec:
     }
   }
 }
-   stage('Test') {
+stage('Test') {
   steps {
-    container('docker') {
+    container('python') {
       sh '''
+        python --version
+        pip --version
         pip install -r requirements.txt
         pip install pytest
         pytest -v
@@ -52,7 +54,7 @@ spec:
     }
   }
 }
-    stage('Lint Helm Chart') {
+   stage('Lint Helm Chart') {
       steps {
         sh "helm lint ${HELM_CHART}"
       }
