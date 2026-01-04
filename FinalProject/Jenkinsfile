@@ -1,37 +1,47 @@
 pipeline {
   agent {
-    kubernetes {
-      yaml """
+  kubernetes {
+    yaml """
 apiVersion: v1
 kind: Pod
 spec:
-  serviceAccount: 'jenkins'
+  serviceAccountName: jenkins
   containers:
   - name: helm
     image: alpine/helm:3.14.0
-    command:
-      - cat
+    command: ['cat']
     tty: true
-    stdin: true
-"""
-      defaultContainer 'helm'
-    }
-  }
 
+  - name: docker
+    image: docker:26.1.3
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+    defaultContainer 'helm'
+  }
+}
   environment {
     APP_NAME   = "final-project"
     HELM_CHART = "FinalProject/helm/final-project"
     NAMESPACE  = "default"
   }
-
   stages {
     stage('Build') {
-      steps {
-        echo "Building application..."
-        // sh "docker build -t my-app:latest ."
-      }
+  steps {
+    container('docker') {
+      sh 'docker version'
+      sh 'docker build -t final-project:latest .'
     }
-
+  }
+}
     stage('Test') {
       steps {
         echo "Running tests..."
