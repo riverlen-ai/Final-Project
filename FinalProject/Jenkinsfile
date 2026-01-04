@@ -37,8 +37,10 @@ spec:
     stage('Build') {
   steps {
     container('docker') {
-      sh 'docker version'
-      sh 'docker build -t final-project:latest .'
+      dir('FinalProject') {
+        sh 'ls -l'
+        sh 'docker build -t final-project:latest .'
+      }
     }
   }
 }
