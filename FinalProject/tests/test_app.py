@@ -1,4 +1,4 @@
-import app
+from FinalProject import app
 
 def test_health_endpoint():
     client = app.app.test_client()
@@ -6,4 +6,3 @@ def test_health_endpoint():
 
     assert response.status_code == 200
     assert response.data.decode() == "OK"
-
