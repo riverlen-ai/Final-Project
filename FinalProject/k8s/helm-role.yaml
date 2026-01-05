@@ -4,15 +4,22 @@ metadata:
   name: helm-role
   namespace: default
 rules:
+
 - apiGroups: [""]
-  resources: ["secrets", "configmaps"]
+  resources:
+    - pods
+    - services
+    - configmaps
+    - secrets
   verbs: ["get", "list", "watch", "create", "update", "delete"]
 
 - apiGroups: ["apps"]
-  resources: ["deployments", "replicasets"]
+  resources:
+    - deployments
+    - replicasets
   verbs: ["*"]
 
-- apiGroups: [""]
-  resources: ["services", "pods"]
-  verbs: ["*"]
-
+- apiGroups: ["autoscaling"]
+  resources:
+    - horizontalpodautoscalers
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
