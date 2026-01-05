@@ -1,7 +1,8 @@
 pipeline {
   agent {
     kubernetes {
-    serviceAccount 'helm-deployer'
+      serviceAccount 'helm-deployer'
+      defaultContainer 'python'
       yaml """
 apiVersion: v1
 kind: Pod
@@ -30,7 +31,6 @@ spec:
     hostPath:
       path: /var/run/docker.sock
 """
-      defaultContainer 'python'
     }
   }
 
