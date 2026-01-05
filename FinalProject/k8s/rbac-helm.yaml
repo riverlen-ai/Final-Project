@@ -50,7 +50,7 @@ metadata:
   namespace: default
 subjects:
 - kind: ServiceAccount
-  name: jenkins
+  name: default
   namespace: jenkins
 roleRef:
   kind: Role
