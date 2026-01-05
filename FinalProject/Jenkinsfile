@@ -1,6 +1,7 @@
 pipeline {
   agent {
     kubernetes {
+    serviceAccount 'helm-deployer'
       yaml """
 apiVersion: v1
 kind: Pod
